@@ -108,6 +108,7 @@ class Producto(models.Model):
 # MODELO 5: CLIENTE
 # ==================================================================
 class Cliente(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     email = models.EmailField(max_length=191, unique=True)

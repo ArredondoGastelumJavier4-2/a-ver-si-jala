@@ -80,7 +80,7 @@
                             <td><span class="badge bg-secondary">{{ venta.cantidad }}</span></td>
                             <td>${{ venta.precio_unitario|floatformat:2|intcomma }}</td>
                             <td><strong class="text-success">${{ venta.total|floatformat:2|intcomma }}</strong></td>
-                            <td>{{ venta.vendedor.perfil.rol|title }}</td>
+                            <td>{{ venta.vendedor.username }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

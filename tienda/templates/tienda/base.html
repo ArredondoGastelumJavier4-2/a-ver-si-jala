@@ -69,6 +69,15 @@
                         <a class="nav-link" href="{% url 'cliente_lista' %}">Clientes</a>
                     </li>
 
+                    
+
+                    <!-- MIS COMPRAS (SOLO CLIENTES) -->
+                    {% if user.perfil.rol == 'cliente' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'mis_compras' %}">Mis Compras</a>
+                    </li>
+                    {% endif %}
+
                     <!-- REGISTRAR VENTA (TODOS LOS USUARIOS) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'venta_form' %}">Registrar Venta</a>
@@ -80,13 +89,18 @@
                     </li>
                     {% endif %}
                 </ul>
-
                 <!-- Cerrar/Iniciar Sesión -->
                 <ul class="navbar-nav ms-auto align-items-center">
                     {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'mi_perfil' %}">Mi Perfil</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
                     <li class="nav-item me-3">
                         <span class="nav-link text-light">
-                            👤 {{ user.perfil.rol|title }}
+                            👤 {{ user.username }}
                         </span>
                     </li>
                     <li class="nav-item">
@@ -98,7 +112,6 @@
                     </li>
                     {% endif %}
                 </ul>
-
             </div>
         </div>
     </nav>

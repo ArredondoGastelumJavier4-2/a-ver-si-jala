@@ -7,7 +7,7 @@
 
 from django import forms
 from .models import Producto, Categoria, Proveedor, Cliente, Venta
-
+from django.contrib.auth.models import User
 
 # ===============================================================
 # FORMULARIO 1: PRODUCTO  → Tabla: tienda_producto
@@ -196,3 +196,31 @@ class VentaForm(forms.ModelForm):
             'cantidad': 'Cantidad',
         }
 
+
+class PerfilUsuarioForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellidos',
+            'email': 'Correo electrónico',
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+
+
+class ClientePerfilForm(forms.ModelForm):
+    nombre_completo = forms.CharField(label='Nombre completo', required=False, disabled=True)
+
+    class Meta:
+        model = Cliente
+        fields = ['nombre_completo', 'nombre', 'apellido', 'telefono', 'direccion']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['nombre_completo'].initial = f"{self.instance.nombre} {self.instance.apellido}"

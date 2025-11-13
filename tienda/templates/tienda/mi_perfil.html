@@ -1,0 +1,27 @@
+{% extends 'tienda/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">👤 Mi Perfil</h2>
+    <div class="card shadow-sm p-4">
+
+        <h5>Datos de cuenta</h5>
+        <form method="post">
+            {% csrf_token %}
+            {{ user_form.as_p }}
+
+            {% if cliente_form %}
+            <hr>
+            <h5>Datos personales</h5>
+            {{ cliente_form.as_p }}
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+        </form>
+    </div>
+
+    <div class="mt-3">
+        <p><strong>Rol:</strong> {{ perfil.rol|title }}</p>
+        <p><strong>Usuario:</strong> {{ request.user.username }}</p>
+    </div>
+</div>
+{% endblock %}

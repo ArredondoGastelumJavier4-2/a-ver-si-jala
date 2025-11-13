@@ -9,10 +9,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Producto, Categoria, Proveedor, Cliente, PerfilUsuario, Venta
-from .forms import ProductoForm, CategoriaForm, ProveedorForm, ClienteForm, VentaForm
+from .forms import ProductoForm, CategoriaForm, ProveedorForm, ClienteForm, VentaForm, PerfilUsuarioForm, ClientePerfilForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.utils import timezone
 from datetime import datetime, time
+from django.contrib.auth.models import User
 
 class CustomLoginView(LoginView):
     template_name = 'tienda/login.html'
@@ -91,6 +92,9 @@ def logout_view(request):
 @login_required
 def home(request):
     hoy = timezone.localdate()  # Fecha local
+    if request.user.perfil.rol == 'cliente':
+        mis_compras = Venta.objects.filter(cliente__email=request.user.email)
+        return render(request, 'tienda/home.html', {'mis_compras': mis_compras})
     inicio = timezone.make_aware(datetime.combine(hoy, time.min))  # 00:00
     fin = timezone.make_aware(datetime.combine(hoy, time.max))     # 23:59:59
 
@@ -278,17 +282,44 @@ def cliente_lista(request):
     return render(request, 'tienda/cliente_lista.html', {'clientes': clientes})
 
 
+from django.contrib.auth.models import User
+from .models import Cliente, PerfilUsuario  # 👈 asegúrate de tener esto arriba
+
 @login_required
 @rol_requerido('administrador', 'gerente', 'vendedor')
 def cliente_crear(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Cliente agregado.')
+            cliente = form.save(commit=False)
+
+            # 🔹 Crear usuario automáticamente
+            username = cliente.nombre.lower()
+            password = cliente.telefono  # Teléfono será la contraseña
+
+            # Evitar duplicados
+            if User.objects.filter(username=username).exists():
+                messages.error(request, f"Ya existe un usuario con el nombre '{username}'.")
+                return redirect('cliente_lista')
+
+            user = User.objects.create_user(username=username, password=password)
+            user.first_name = cliente.nombre
+            user.last_name = cliente.apellido
+            user.email = cliente.email
+            user.save()
+
+            # 🔹 Crear perfil con rol "cliente"
+            PerfilUsuario.objects.create(user=user, rol='cliente')
+
+            # 🔹 Asociar cliente con usuario
+            cliente.user = user
+            cliente.save()
+
+            messages.success(request, f"Cliente '{cliente.nombre_completo}' registrado correctamente.")
             return redirect('cliente_lista')
     else:
         form = ClienteForm()
+
     return render(request, 'tienda/cliente_form.html', {'form': form, 'accion': 'Crear'})
 
 
@@ -389,3 +420,53 @@ def reporte_ventas(request):
         'fecha': hoy,
     }
     return render(request, 'tienda/reporte_ventas.html', context)
+
+# tienda/views.py
+from .forms import PerfilUsuarioForm, ClientePerfilForm
+
+@login_required
+def mi_perfil(request):
+    user = request.user
+    perfil = getattr(user, 'perfil', None)
+    cliente = None
+
+    if hasattr(user, 'cliente'):
+        cliente = user.cliente
+
+    if request.method == 'POST':
+        user_form = PerfilUsuarioForm(request.POST, instance=user)
+        cliente_form = ClientePerfilForm(request.POST, instance=cliente) if cliente else None
+
+        if user_form.is_valid() and (cliente_form is None or cliente_form.is_valid()):
+            user_form.save()
+            if cliente_form:
+                cliente_form.save()
+            messages.success(request, '✅ Tu perfil se actualizó correctamente.')
+            return redirect('mi_perfil')
+    else:
+        user_form = PerfilUsuarioForm(instance=user)
+        cliente_form = ClientePerfilForm(instance=cliente) if cliente else None
+
+    return render(request, 'tienda/mi_perfil.html', {
+        'user_form': user_form,
+        'cliente_form': cliente_form,
+        'perfil': perfil,
+    })
+
+@login_required
+@rol_requerido('cliente')
+def mis_compras(request):
+    """Historial de compras del cliente autenticado"""
+    try:
+        cliente = request.user.cliente
+        compras = Venta.objects.filter(cliente=cliente).order_by('-fecha_venta')
+    except Cliente.DoesNotExist:
+        messages.warning(request, 'No tienes compras registradas.')
+        compras = []
+
+    total_compras = sum(venta.total for venta in compras)
+
+    return render(request, 'tienda/mis_compras.html', {
+        'compras': compras,
+        'total_compras': total_compras,
+    })

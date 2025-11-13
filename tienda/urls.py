@@ -41,4 +41,7 @@ urlpatterns = [
     path('ventas/reporte/', views.reporte_ventas, name='reporte_ventas'),  # Reporte de ventas
     path('ventas/crear/', views.venta_crear, name='venta_form'),
 
+    path('mi-perfil/', views.mi_perfil, name='mi_perfil'),
+    path('mis-compras/', views.mis_compras, name='mis_compras'),
+
 ]
