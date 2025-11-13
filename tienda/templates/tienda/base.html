@@ -23,6 +23,8 @@
     <!-- <Hoja de estilos personalizada del proyecto> -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+!-- Bootstrap JS (necesario para que los alerts funcionen con .close()) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <body>
     <!-- Navbar -->
@@ -32,45 +34,61 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     {% if user.is_authenticated %}
+                    <!-- Inicio -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Inicio</a>
                     </li>
 
-                    <!-- Productos -->
+                    <!-- PRODUCTOS (ADMIN y GERENTE) -->
+                    {% if user.perfil.rol == 'administrador' or user.perfil.rol == 'gerente' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'producto_lista' %}">Productos</a>
                     </li>
+                    {% endif %}
 
-                    <!-- Categorías -->
+                    <!-- CATEGORÍAS (SOLO ADMINISTRADOR) -->
+                    {% if user.perfil.rol == 'administrador' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'categoria_lista' %}">Categorías</a>
                     </li>
+                    {% endif %}
 
-                    <!-- Proveedores -->
+                    <!-- PROVEEDORES (SOLO ADMINISTRADOR) -->
+                    {% if user.perfil.rol == 'administrador' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'proveedor_lista' %}">Proveedores</a>
                     </li>
+                    {% endif %}
 
-                    <!-- Clientes -->
+                    <!-- CLIENTES (TODOS LOS USUARIOS) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'cliente_lista' %}">Clientes</a>
                     </li>
 
-                    <!-- Ventas y Reportes -->
+                    <!-- REGISTRAR VENTA (TODOS LOS USUARIOS) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'venta_form' %}">Registrar Venta</a>
                     </li>
+
+                    <!-- REPORTE DE VENTAS (TODOS LOS USUARIOS) -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'reporte_ventas' %}">Reporte de Ventas</a>
                     </li>
                     {% endif %}
                 </ul>
 
-                <ul class="navbar-nav ms-auto">
+                <!-- Cerrar/Iniciar Sesión -->
+                <ul class="navbar-nav ms-auto align-items-center">
                     {% if user.is_authenticated %}
+                    <li class="nav-item me-3">
+                        <span class="nav-link text-light">
+                            👤 {{ user.perfil.rol|title }}
+                        </span>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
                     </li>
@@ -80,9 +98,38 @@
                     </li>
                     {% endif %}
                 </ul>
+
             </div>
         </div>
     </nav>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert 
+    {% if message.tags %}
+        alert-{{ message.tags }}
+    {% else %}
+        alert-info
+    {% endif %}
+    alert-dismissible fade show auto-dismiss" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                document.querySelectorAll('.auto-dismiss').forEach(alert => {
+                    let bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    bsAlert.close();
+                });
+            }, 2000); // 2 segundos
+        });
+    </script>
+    {% endif %}
 
     <!-- Contenido -->
     <div class="container mt-4">

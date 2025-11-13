@@ -12,21 +12,31 @@
                 <form method="post">
                     {% csrf_token %}
 
+                    <!-- Cliente -->
                     <div class="mb-3">
                         <label class="form-label">{{ form.cliente.label }}</label>
                         {{ form.cliente }}
                     </div>
 
+                    <!-- Producto -->
                     <div class="mb-3">
                         <label class="form-label">{{ form.producto.label }}</label>
                         {{ form.producto }}
                     </div>
 
+                    <!-- Precio Unitario -->
+                    <div class="mb-3">
+                        <label class="form-label">Precio Unitario</label>
+                        <input type="text" id="precio_unitario" class="form-control" readonly>
+                    </div>
+
+                    <!-- Cantidad -->
                     <div class="mb-3">
                         <label class="form-label">{{ form.cantidad.label }}</label>
                         {{ form.cantidad }}
                     </div>
 
+                    <!-- Botones -->
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success btn-lg">
                             <i class="fas fa-check"></i> Registrar Venta
@@ -40,4 +50,25 @@
         </div>
     </div>
 </div>
+
+<!-- 🔽 Script para mostrar precio del producto seleccionado -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const productoSelect = document.getElementById('id_producto');
+        const precioInput = document.getElementById('precio_unitario');
+
+        // Crear un diccionario con productos y precios desde Django
+        const productos = {
+        {% for producto in form.fields.producto.queryset %}
+        "{{ producto.id }}": "{{ producto.precio_venta }}",
+            {% endfor %}
+    };
+
+    // Evento al cambiar producto
+    productoSelect.addEventListener('change', function () {
+        const productoId = this.value;
+        precioInput.value = productos[productoId] ? '$' + productos[productoId] : '';
+    });
+});
+</script>
 {% endblock %}

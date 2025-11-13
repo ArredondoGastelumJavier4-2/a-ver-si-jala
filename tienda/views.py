@@ -37,7 +37,7 @@ def rol_requerido(*roles_permitidos):
                 return view_func(request, *args, **kwargs)
 
             try:
-                perfil = request.user.perfilusuario
+                perfil = request.user.perfil
                 if perfil.rol in roles_permitidos:
                     return view_func(request, *args, **kwargs)
                 else:
@@ -122,7 +122,7 @@ def home(request):
 # FORMULARIO 1: PRODUCTO → Tabla: tienda_producto
 # ===============================================================
 @login_required
-@rol_requerido('administrador', 'empleado')
+@rol_requerido('administrador', 'gerente')
 def producto_lista(request):
     productos = Producto.objects.all()
     return render(request, 'tienda/producto_lista.html', {'productos': productos})
@@ -272,14 +272,14 @@ def proveedor_eliminar(request, pk):
 # FORMULARIO 4: CLIENTE → Tabla: tienda_cliente
 # ===============================================================
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def cliente_lista(request):
     clientes = Cliente.objects.all()
     return render(request, 'tienda/cliente_lista.html', {'clientes': clientes})
 
 
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def cliente_crear(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
@@ -293,7 +293,7 @@ def cliente_crear(request):
 
 
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def cliente_editar(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
     if request.method == 'POST':
@@ -308,7 +308,7 @@ def cliente_editar(request, pk):
 
 
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def cliente_eliminar(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
     if request.method == 'POST':
@@ -322,7 +322,7 @@ def cliente_eliminar(request, pk):
 # FORMULARIO 5: VENTA → Tabla: tienda_venta
 # ===============================================================
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def venta_lista(request):
     hoy = timezone.now().date()
     ventas_hoy = Venta.objects.filter(fecha_venta__date=hoy)
@@ -341,14 +341,16 @@ def venta_lista(request):
 
 
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def venta_crear(request):
     if request.method == 'POST':
         form = VentaForm(request.POST)
         if form.is_valid():
-            form.save()
+            venta = form.save(commit=False)
+            venta.vendedor = request.user  # 👈 asigna el usuario que crea la venta
+            venta.save()
             messages.success(request, 'Venta registrada correctamente.')
-            return redirect('venta_lista')
+            return redirect('reporte_ventas')
     else:
         form = VentaForm()
     return render(request, 'tienda/venta_form.html', {'form': form, 'accion': 'Registrar'})
@@ -367,7 +369,7 @@ def venta_eliminar(request, pk):
 
 
 @login_required
-@rol_requerido('administrador', 'empleado', 'vendedor')
+@rol_requerido('administrador', 'gerente', 'vendedor')
 def reporte_ventas(request):
     """Reporte de ventas del día"""
     hoy = timezone.localdate()
