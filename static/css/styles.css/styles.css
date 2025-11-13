@@ -1,0 +1,57 @@
+/* static/css/styles.css */
+
+/* === Estilos generales === */
+body {
+    background-color: #f8f9fa; /* Fondo suave */
+    font-family: Arial, sans-serif;
+}
+
+/* === Navbar === */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* === Tarjetas === */
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* === Tablas === */
+.table th {
+    font-weight: 700;
+}
+
+/* === Formularios y encabezados === */
+.card-header.bg-primary,
+.card-header.bg-success,
+.card-header.bg-info,
+.card-header.bg-warning {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+/* === Botones personalizados === */
+.btn {
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* === Centrados y ajustes === */
+.text-center {
+    text-align: center !important;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+

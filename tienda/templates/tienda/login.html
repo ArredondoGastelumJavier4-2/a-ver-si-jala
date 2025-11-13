@@ -1,0 +1,44 @@
+<!-- tienda/templates/tienda/login.html -->
+{% extends 'tienda/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<!-- ===== FORMULARIO DE LOGIN ===== -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <!-- Tarjeta contenedora -->
+        <div class="card shadow-lg">
+            <!-- Encabezado de la tarjeta -->
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-lock me-2"></i>Inicio de Sesión
+                </h3>
+            </div>
+
+            <!-- Cuerpo de la tarjeta -->
+            <div class="card-body">
+                <!-- Formulario de autenticación -->
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <!-- Campo de formulario generado con crispy-forms -->
+                    {{ form|crispy }}
+
+                    <!-- Botón de envío -->
+                    <button type="submit" class="btn btn-primary w-100 mt-3">
+                        Ingresar
+                    </button>
+
+                    <!-- Mensaje de error si hay fallos de autenticación -->
+                    {% if form.errors %}
+                    <p class="text-danger mt-3 text-center">
+                        Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.
+                    </p>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

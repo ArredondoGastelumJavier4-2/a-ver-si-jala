@@ -1,0 +1,67 @@
+<!-- tienda/templates/tienda/proveedor_form.html -->
+{% extends 'tienda/base.html' %}  <!-- Hereda de la plantilla base -->
+
+{% block title %}{{ accion }} Proveedor{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="fas fa-truck"></i> {{ accion }} Proveedor</h1>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Campo: Nombre -->
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                            <i class="fas fa-signature"></i> {{ form.nombre.label }}
+                        </label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger mt-1">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo: Contacto -->
+                    <div class="mb-3">
+                        <label for="{{ form.contacto.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i> {{ form.contacto.label }}
+                        </label>
+                        {{ form.contacto }}
+                        {% if form.contacto.errors %}
+                            <div class="text-danger mt-1">{{ form.contacto.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Campo: Teléfono -->
+                    <div class="mb-3">
+                        <label for="{{ form.telefono.id_for_label }}" class="form-label">
+                            <i class="fas fa-phone"></i> {{ form.telefono.label }}
+                        </label>
+                        {{ form.telefono }}
+                        {% if form.telefono.errors %}
+                            <div class="text-danger mt-1">{{ form.telefono.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'proveedor_lista' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

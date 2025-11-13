@@ -1,0 +1,46 @@
+<!-- tienda/templates/tienda/proveedor_eliminar.html -->
+{% extends 'tienda/base.html' %}
+
+{% block title %}Eliminar Proveedor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Advertencia:</strong> Esta acción eliminará el proveedor de forma permanente.
+                </div>
+
+                <p class="lead">¿Está seguro que desea eliminar el siguiente proveedor?</p>
+
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5>{{ proveedor.nombre }}</h5>
+                        <p class="mb-1"><strong>Contacto:</strong> {{ proveedor.contacto|default:"Sin contacto" }}</p>
+                        <p class="mb-0"><strong>Teléfono:</strong> {{ proveedor.telefono|default:"Sin teléfono" }}</p>
+                    </div>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'proveedor_lista' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i> Sí, Eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

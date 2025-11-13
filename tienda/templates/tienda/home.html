@@ -1,0 +1,99 @@
+{% extends 'tienda/base.html' %}
+{% load humanize %}
+
+{% block title %}🏠 Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">🏠 Dashboard</h1>
+
+<!-- TARJETAS DE ESTADÍSTICAS -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Productos</h5>
+                <p class="card-text fs-4">{{ total_productos }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Categorías</h5>
+                <p class="card-text fs-4">{{ total_categorias }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Proveedores</h5>
+                <p class="card-text fs-4">{{ total_proveedores }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Clientes</h5>
+                <p class="card-text fs-4">{{ total_clientes }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-dark bg-light mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ventas hoy</h5>
+                <p class="card-text fs-4">${{ total_ventas_dia|floatformat:2|intcomma }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-dark bg-light mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Cantidad de ventas</h5>
+                <p class="card-text fs-4">{{ cantidad_ventas }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLA DE VENTAS DEL DÍA -->
+<h3 class="mb-3">Ventas del día ({{ fecha|date:"d/m/Y" }})</h3>
+{% if ventas_hoy %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Hora</th>
+                <th>Producto</th>
+                <th>Cliente</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Vendedor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas_hoy %}
+            <tr>
+                <td>{{ venta.id }}</td>
+                <td>{{ venta.fecha_venta|date:"H:i" }}</td>
+                <td>{{ venta.producto.nombre }}</td>
+                <td>{{ venta.cliente.nombre_completo }}</td>
+                <td>{{ venta.cantidad }}</td>
+                <td>${{ venta.total|floatformat:2|intcomma }}</td>
+                <td>{{ venta.vendedor.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>No se han registrado ventas todavía.</p>
+{% endif %}
+
+{% endblock %}

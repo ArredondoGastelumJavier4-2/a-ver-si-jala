@@ -1,0 +1,79 @@
+<!-- tienda/templates/tienda/categoria_lista.html -->
+{% extends 'tienda/base.html' %}
+
+{% block title %}Lista de Categorías{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">
+        Gestión de Categorías ({{ categorias|length }})
+    </h1>
+
+    <!-- Botón para crear nueva categoría -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'categoria_crear' %}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus me-1"></i> Nueva Categoría
+        </a>
+    </div>
+
+    <!-- Tabla de categorías -->
+    <div class="table-responsive shadow rounded">
+        <table class="table table-hover table-striped align-middle">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Productos Asociados</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.id }}</td>
+                    <td>{{ categoria.nombre }}</td>
+                    <td>{{ categoria.descripcion|default:"Sin descripción" }}</td>
+
+                    <!-- Contador de productos activos en esta categoría -->
+                    <td>
+                        {% with categoria.producto_set.all|length as total_productos %}
+                            <span class="badge 
+                                {% if total_productos == 0 %}
+                                    bg-secondary
+                                {% elif total_productos < 5 %}
+                                    bg-warning
+                                {% else %}
+                                    bg-success
+                                {% endif %}
+                            ">
+                                {{ total_productos }}
+                            </span>
+                        {% endwith %}
+                    </td>
+
+                    <td>{{ categoria.fecha_creacion|date:"d/m/Y H:i" }}</td>
+
+                    <!-- Acciones: editar / eliminar -->
+                    <td>
+                        <a href="{% url 'categoria_editar' categoria.pk %}" class="btn btn-sm btn-info me-2" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'categoria_eliminar' categoria.pk %}" class="btn btn-sm btn-danger" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        No hay categorías registradas.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

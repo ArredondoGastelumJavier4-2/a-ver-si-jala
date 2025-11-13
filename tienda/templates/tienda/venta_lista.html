@@ -1,0 +1,38 @@
+{% extends 'tienda/base.html' %}
+
+{% block title %}Lista de Ventas{% endblock %}
+
+{% block content %}
+<h2>Ventas registradas</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Total</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for venta in ventas %}
+        <tr>
+            <td>{{ venta.id }}</td>
+            <td>{{ venta.cliente }}</td>
+            <td>{{ venta.producto }}</td>
+            <td>{{ venta.cantidad }}</td>
+            <td>{{ venta.precio_unitario }}</td>
+            <td>{{ venta.total }}</td>
+            <td>{{ venta.fecha_venta }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No hay ventas registradas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

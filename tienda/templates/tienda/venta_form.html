@@ -1,0 +1,43 @@
+{% extends 'tienda/base.html' %}
+{% block title %}Registrar Venta{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="fas fa-cash-register"></i> Registrar Nueva Venta</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.cliente.label }}</label>
+                        {{ form.cliente }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.producto.label }}</label>
+                        {{ form.producto }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.cantidad.label }}</label>
+                        {{ form.cantidad }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-check"></i> Registrar Venta
+                        </button>
+                        <a href="{% url 'reporte_ventas' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
